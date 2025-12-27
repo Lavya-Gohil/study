@@ -206,3 +206,32 @@ model UserAchievement {
   @@unique([userId, achievementId])
   @@index([userId])
 }
+
+model Question {
+  id            String   @id @default(cuid())
+  subject       String   // Physics, Chemistry, Mathematics, Biology
+  topic         String   // Chapter/Topic name
+  question      String   @db.Text
+  options       String[] // Array of 4 options
+  correctAnswer Int      // Index of correct answer (0-3)
+  explanation   String   @db.Text
+  difficulty    String   // easy, medium, hard
+  
+  // Metadata
+  examType      String   // JEE Main, JEE Advanced, CBSE 10, CBSE 12, NEET
+  year          Int      // 2020, 2021, 2022, 2023, 2024, 2025
+  source        String?  // Official source attribution
+  paperCode     String?  // Paper code if available
+  
+  // Additional fields
+  marks         Int      @default(1)
+  negativeMarks Float    @default(0)
+  timeEstimate  Int      @default(60) // seconds
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([subject, examType])
+  @@index([difficulty, year])
+  @@index([examType, year])
+}
