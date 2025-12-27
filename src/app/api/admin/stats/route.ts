@@ -8,22 +8,18 @@ export async function GET(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    // @ts-expect-error - Prisma client has question model, VS Code cache issue
     const total = await prisma.question.count();
 
-    // @ts-expect-error - Prisma client has question model, VS Code cache issue
     const byExamType = await prisma.question.groupBy({
       by: ['examType'],
       _count: true,
     });
 
-    // @ts-expect-error - Prisma client has question model, VS Code cache issue
     const bySubject = await prisma.question.groupBy({
       by: ['subject'],
       _count: true,
     });
 
-    // @ts-expect-error - Prisma client has question model, VS Code cache issue
     const byDifficulty = await prisma.question.groupBy({
       by: ['difficulty'],
       _count: true,
