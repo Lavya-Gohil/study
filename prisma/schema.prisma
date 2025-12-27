@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Onboarding data
+  examType      String?   // JEE, SAT, Boards, etc.
+  subjects      String[]  // Array of subjects
+  dailyHours    Int?      // Target study hours per day
+  examDate      DateTime?
+  onboardingComplete Boolean @default(false)
+
+  // Subscription
+  subscriptionStatus String @default("free") // free, trial, premium
+  subscriptionId     String?
+  subscriptionEnd    DateTime?
+  trialStarted       DateTime?
+
+  // User Preferences
+  darkMode          Boolean @default(false)
+  studyReminders    Boolean @default(true)
+  breakReminders    Boolean @default(true)
+  emailNotifications Boolean @default(true)
+  
+  // Gamification
+  xp                Int @default(0)
+  level             Int @default(1)
+  coins             Int @default(0)
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  studyPlans    StudyPlan[]
+  streaks       Streak[]
+  focusSessions FocusSession[]
+  doubts        Doubt[]
+  progress      WeeklyProgress[]
+  notes         Note[]
+  achievements  UserAchievement[]
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model StudyPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @default(now())
+  tasks       Json     // Array of tasks: { subject, topic, duration, completed, priority }
+  totalHours  Float
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Streak {
+  id            String   @id @default(cuid())
+  userId        String
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastStudyDate DateTime?
+  totalDays     Int      @default(0)
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model FocusSession {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  duration    Int      // in minutes
+  type        String   // pomodoro, deep-focus
+  completed   Boolean  @default(false)
+  startTime   DateTime @default(now())
+  endTime     DateTime?
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startTime])
+}
+
+model Doubt {
+  id          String   @id @default(cuid())
+  userId      String
+  question    String
+  answer      String?
+  subject     String
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model WeeklyProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  weekStart     DateTime
+  weekEnd       DateTime
+  totalHours    Float    @default(0)
+  completedTasks Int     @default(0)
+  totalTasks    Int      @default(0)
+  subjects      Json     // { subject: hours }
+  createdAt     DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, weekStart])
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  title       String
+  content     String
+  tags        String[]
+  isPinned    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, subject])
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String
+  category    String   // streak, study-hours, tasks, focus
+  requirement Int      // threshold to unlock
+  xpReward    Int
+  coinReward  Int
+  
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
