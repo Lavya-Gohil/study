@@ -23,9 +23,14 @@ export default function AdminPanel() {
   useEffect(() => {
     if (status === 'loading') return;
     
-    if (!session || session.user?.email !== 'gohil.lavya@gmail.com') {
-      router.push('/');
+    if (!session) {
+      router.push('/auth/signin');
+      return;
     }
+    
+    // For now, allow any logged-in user (TEMPORARY)
+    // Remove this check in production to restrict to specific email
+    console.log('Logged in as:', session.user?.email);
   }, [session, status, router]);
 
   useEffect(() => {
@@ -157,7 +162,7 @@ export default function AdminPanel() {
     );
   }
 
-  if (!session || session.user?.email !== 'gohil.lavya@gmail.com') {
+  if (!session) {
     return null;
   }
 
