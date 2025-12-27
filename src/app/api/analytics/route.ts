@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
           },
         })
 
-        const hours = sessions.reduce((sum, s) => sum + (s.duration / 60), 0)
+        const hours = sessions.reduce((sum: number, s: any) => sum + (s.duration / 60), 0)
         
         return {
           day: format(date, 'EEE'),
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     })
 
     const subjectHours: { [key: string]: number } = {}
-    allSessions.forEach((session) => {
+    allSessions.forEach((session: any) => {
       subjectHours[session.subject] = (subjectHours[session.subject] || 0) + session.duration / 60
     })
 
@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
         let totalTasks = 0
         let completedTasks = 0
 
-        plans.forEach((plan) => {
+        plans.forEach((plan: any) => {
           const tasks = plan.tasks as any[]
           totalTasks += tasks.length
           completedTasks += tasks.filter((t) => t.completed).length
@@ -132,7 +132,7 @@ export async function GET(req: NextRequest) {
     })
     
     let totalCompletedTasks = 0
-    allPlans.forEach((plan) => {
+    allPlans.forEach((plan: any) => {
       const tasks = plan.tasks as any[]
       totalCompletedTasks += tasks.filter((t: any) => t.completed).length
     })

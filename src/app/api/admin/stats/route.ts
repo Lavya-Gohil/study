@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuthMiddleware } from '@/lib/adminAuth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   // Check admin authentication
@@ -28,11 +26,11 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate specific exam counts
-    const jeeMain = byExamType.find(e => e.examType === 'JEE_Main')?._count || 0;
-    const jeeAdvanced = byExamType.find(e => e.examType === 'JEE_Advanced')?._count || 0;
-    const neet = byExamType.find(e => e.examType === 'NEET')?._count || 0;
-    const cbse10 = byExamType.find(e => e.examType === 'CBSE_10')?._count || 0;
-    const cbse12 = byExamType.find(e => e.examType === 'CBSE_12')?._count || 0;
+    const jeeMain = byExamType.find((e: any) => e.examType === 'JEE_Main')?._count || 0;
+    const jeeAdvanced = byExamType.find((e: any) => e.examType === 'JEE_Advanced')?._count || 0;
+    const neet = byExamType.find((e: any) => e.examType === 'NEET')?._count || 0;
+    const cbse10 = byExamType.find((e: any) => e.examType === 'CBSE_10')?._count || 0;
+    const cbse12 = byExamType.find((e: any) => e.examType === 'CBSE_12')?._count || 0;
 
     return NextResponse.json({
       total,

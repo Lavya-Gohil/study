@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     })
 
     // Format the plans with calculated total hours
-    const plans = studyPlans.map((plan) => {
+    const plans = studyPlans.map((plan: any) => {
       const tasks = plan.tasks as any[]
       const totalHours = tasks.reduce((sum, task) => sum + (task.duration || 0), 0)
       return {

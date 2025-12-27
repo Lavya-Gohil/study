@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuthMiddleware } from '@/lib/adminAuth';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 const PARSED_DIR = path.join(process.cwd(), 'parsed_questions');
 
 export async function POST(request: NextRequest) {

@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
         const writer = fs.createWriteStream(filePath);
         response.data.pipe(writer);
 
-        await new Promise((resolve, reject) => {
-          writer.on('finish', resolve);
+        await new Promise<void>((resolve, reject) => {
+          writer.on('finish', () => resolve());
           writer.on('error', reject);
         });
 

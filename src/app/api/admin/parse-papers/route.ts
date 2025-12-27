@@ -102,7 +102,7 @@ function extractQuestions(text: string, metadata: any): any[] {
   const questions: any[] = [];
 
   // Split text into question blocks
-  const questionPattern = /(?:Q\.?\s*\d+|Question\s+\d+)[:\.]?\s*(.*?)(?=Q\.?\s*\d+|Question\s+\d+|$)/gis;
+  const questionPattern = /(?:Q\.?\s*\d+|Question\s+\d+)[:\.]?\s*(.*?)(?=Q\.?\s*\d+|Question\s+\d+|$)/gi;
   const blocks = text.match(questionPattern) || [];
 
   for (const block of blocks) {
@@ -161,7 +161,7 @@ function extractQuestionText(block: string): string {
   let text = block.replace(/^(?:Q\.?\s*\d+|Question\s+\d+)[:\.]?\s*/i, '');
   
   // Remove options part
-  text = text.replace(/\([A-Da-d]\).*$/s, '');
+  text = text.replace(/\([A-Da-d]\).*/g, '');
   
   return text.trim();
 }
@@ -204,7 +204,7 @@ function findCorrectAnswer(block: string, options: string[]): number {
 }
 
 function extractExplanation(block: string): string {
-  const explanationPattern = /(?:Solution|Explanation|Answer)[:\s]*(.*?)(?=Q\.?\s*\d+|Question\s+\d+|$)/is;
+  const explanationPattern = /(?:Solution|Explanation|Answer)[:\s]*(.*?)(?=Q\.?\s*\d+|Question\s+\d+|$)/i;
   const match = block.match(explanationPattern);
   return match ? match[1].trim() : '';
 }
