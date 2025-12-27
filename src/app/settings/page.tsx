@@ -19,6 +19,10 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
+    // Load dark mode preference from localStorage on mount
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true'
+    setDarkMode(savedDarkMode)
+    
     if (status === 'unauthenticated') {
       router.push('/auth/signin')
     } else if (status === 'authenticated') {
@@ -27,13 +31,17 @@ export default function SettingsPage() {
   }, [status, router])
 
   useEffect(() => {
-    // Apply dark mode to document
+    // Apply dark mode to document and save to localStorage
     if (darkMode) {
       document.documentElement.classList.add('dark')
-      document.body.classList.add('dark:bg-gray-900', 'dark:text-white')
+      document.body.style.backgroundColor = '#111827'
+      document.body.style.color = '#ffffff'
+      localStorage.setItem('darkMode', 'true')
     } else {
       document.documentElement.classList.remove('dark')
-      document.body.classList.remove('dark:bg-gray-900', 'dark:text-white')
+      document.body.style.backgroundColor = ''
+      document.body.style.color = ''
+      localStorage.setItem('darkMode', 'false')
     }
   }, [darkMode])
 

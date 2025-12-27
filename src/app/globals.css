@@ -6,4 +6,15 @@
 
 body {
   font-family: var(--font-family-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode styles */
+.dark body {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dark {
+  color-scheme: dark;
 }
