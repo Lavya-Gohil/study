@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiMoon, FiSun, FiBell, FiMail, FiClock, FiSave, FiTrash2 } from 'react-icons/fi'
@@ -14,11 +14,26 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [darkMode, setDarkMode] = useState(false)
+  const [didInitTheme, setDidInitTheme] = useState(false)
   const [studyReminders, setStudyReminders] = useState(true)
   const [breakReminders, setBreakReminders] = useState(true)
   const [emailNotifications, setEmailNotifications] = useState(false)
   const [saving, setSaving] = useState(false)
   const saveTimer = useRef<NodeJS.Timeout | null>(null)
+  const themeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const triggerThemeTransition = useCallback(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const doc = document.documentElement
+    doc.classList.add('theme-transition')
+
+    if (themeTimer.current) window.clearTimeout(themeTimer.current)
+    themeTimer.current = window.setTimeout(() => {
+      doc.classList.remove('theme-transition')
+      themeTimer.current = null
+    }, 520)
+  }, [])
 
   useEffect(() => {
     // Load dark mode preference from localStorage on mount
@@ -35,19 +50,23 @@ export default function SettingsPage() {
   useEffect(() => {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
+      if (themeTimer.current) window.clearTimeout(themeTimer.current)
     }
   }, [])
 
   useEffect(() => {
-    // Apply dark mode to document and save to localStorage
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('darkMode', 'true')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('darkMode', 'false')
+    const doc = document.documentElement
+
+    doc.classList.toggle('dark', darkMode)
+    localStorage.setItem('darkMode', darkMode ? 'true' : 'false')
+
+    if (!didInitTheme) {
+      setDidInitTheme(true)
+      return
     }
-  }, [darkMode])
+
+    triggerThemeTransition()
+  }, [darkMode, didInitTheme, triggerThemeTransition])
 
   const fetchUserSettings = async () => {
     try {

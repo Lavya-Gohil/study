@@ -1,24 +1,27 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Geist, Geist_Mono } from "next/font/google";
+import { DM_Mono, Playfair_Display, Sora } from "next/font/google";
 import SessionProvider from "@/components/SessionProvider";
 import PageTransition from "@/components/PageTransition";
+import CursorSpotlight from "@/components/CursorSpotlight";
 import TileMotion from "@/components/TileMotion";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
-const bebasNeue = Bebas_Neue({
-  weight: "400",
-  variable: "--font-bebas",
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -31,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -47,9 +50,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} antialiased`}
+        className={`${sora.variable} ${playfair.variable} ${dmMono.variable} antialiased`}
       >
         <SessionProvider>
+          <CursorSpotlight />
           <TileMotion />
           <PageTransition>{children}</PageTransition>
         </SessionProvider>
