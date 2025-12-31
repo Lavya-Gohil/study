@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseJsonArray } from '@/lib/json'
 
 export async function GET(req: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     // Format the plans with calculated total hours
     const plans = studyPlans.map((plan: any) => {
-      const tasks = plan.tasks as any[]
+      const tasks = parseJsonArray<any>(plan.tasks)
       const totalHours = tasks.reduce((sum, task) => sum + (task.duration || 0), 0)
       return {
         date: plan.date,

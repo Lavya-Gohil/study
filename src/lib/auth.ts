@@ -75,7 +75,11 @@ export const authOptions: NextAuthOptions = {
         })
         
         if (dbUser) {
-          token.subscriptionStatus = dbUser.subscriptionStatus
+          const isPrivileged =
+            dbUser.role === "SUPER_ADMIN" || dbUser.role === "MODERATOR"
+          token.subscriptionStatus = isPrivileged
+            ? "premium"
+            : dbUser.subscriptionStatus
           token.onboardingComplete = dbUser.onboardingComplete
         }
       }

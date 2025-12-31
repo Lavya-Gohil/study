@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseJsonArray } from '@/lib/json'
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +19,12 @@ export async function GET(req: NextRequest) {
       ],
     })
 
-    return NextResponse.json({ notes })
+    const formattedNotes = notes.map((note) => ({
+      ...note,
+      tags: parseJsonArray<string>(note.tags),
+    }))
+
+    return NextResponse.json({ notes: formattedNotes })
   } catch (error) {
     console.error('Get notes error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -40,11 +46,14 @@ export async function POST(req: NextRequest) {
         subject,
         title,
         content,
-        tags: tags || [],
+        tags: JSON.stringify(tags || []),
       },
     })
 
-    return NextResponse.json({ note }, { status: 201 })
+    return NextResponse.json(
+      { note: { ...note, tags: parseJsonArray<string>(note.tags) } },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Create note error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -66,13 +75,19 @@ export async function PATCH(req: NextRequest) {
     }
 
     const updates = await req.json()
+    const nextUpdates = { ...updates }
+    if (Array.isArray(updates.tags)) {
+      nextUpdates.tags = JSON.stringify(updates.tags)
+    }
 
     const note = await prisma.note.update({
       where: { id, userId: session.user.id },
-      data: updates,
+      data: nextUpdates,
     })
 
-    return NextResponse.json({ note })
+    return NextResponse.json({
+      note: { ...note, tags: parseJsonArray<string>(note.tags) },
+    })
   } catch (error) {
     console.error('Update note error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

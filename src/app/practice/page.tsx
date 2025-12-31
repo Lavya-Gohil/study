@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiCheckCircle, FiX, FiRefreshCw, FiLock, FiPlay } from 'react-icons/fi'
+import { Button, Card, CardContent, IconButton, Typography } from '@mui/material'
 
 interface Question {
   id: string
@@ -137,29 +138,46 @@ export default function PracticePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
-        <div className="w-3 h-3 bg-black dark:bg-white rounded-full animate-pulse" />
+      <div className="app-shell flex items-center justify-center">
+        <div className="w-3 h-3 bg-slate-900 rounded-full animate-pulse" />
       </div>
     )
   }
 
   // Configuration Setup Screen
   if (configStep === 'setup') {
+    const hasSubjects = subjects.length > 0
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-        <div className="max-w-2xl mx-auto">
+      <div className="app-shell p-4">
+        <div className="max-w-2xl mx-auto relative z-10">
           {/* Header */}
           <div className="flex items-center mb-8 pt-6">
-            <button
+            <IconButton
               onClick={() => router.push('/dashboard')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="glass-pill"
+              sx={{ width: 44, height: 44 }}
             >
               <FiArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold ml-4">Configure Practice Session</h1>
+            </IconButton>
+            <Typography variant="h5" className="ml-4 text-slate-900 font-bold">
+              Configure Practice Session
+            </Typography>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 space-y-8">
+          <Card className="glass-card glass-shimmer rounded-3xl">
+            <CardContent className="p-8 space-y-8">
+            {!hasSubjects && (
+              <div className="rounded-2xl border border-dashed border-slate-200 p-4 text-slate-600">
+                Add subjects first to unlock practice sessions.
+                <button
+                  onClick={() => router.push('/onboarding')}
+                  className="ml-3 text-blue-600 hover:text-blue-700 font-semibold"
+                >
+                  Complete onboarding →
+                </button>
+              </div>
+            )}
             {/* Number of Questions */}
             <div>
               <label className="block text-sm font-medium mb-3">
@@ -172,8 +190,8 @@ export default function PracticePage() {
                     onClick={() => setNumQuestions(num)}
                     className={`py-3 px-4 rounded-xl border-2 transition-all ${
                       numQuestions === num
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-semibold'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     {num}
@@ -184,7 +202,7 @@ export default function PracticePage() {
                 type="number"
                 value={numQuestions}
                 onChange={(e) => setNumQuestions(Math.min(120, Math.max(1, parseInt(e.target.value) || 10)))}
-                className="mt-3 w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 focus:outline-none focus:border-blue-500"
+                className="mt-3 w-full px-4 py-2 rounded-xl glass-input"
                 placeholder="Or enter custom number (1-120)"
                 min="1"
                 max="120"
@@ -201,8 +219,8 @@ export default function PracticePage() {
                   onClick={() => setSelectedSubject('all')}
                   className={`py-3 px-4 rounded-xl border-2 transition-all ${
                     selectedSubject === 'all'
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                      : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   🎯 All Subjects (Mixed)
@@ -213,8 +231,8 @@ export default function PracticePage() {
                     onClick={() => setSelectedSubject(subject)}
                     className={`py-3 px-4 rounded-xl border-2 transition-all ${
                       selectedSubject === subject
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-semibold'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     {subject === 'Physics' && '⚛️ '}
@@ -243,8 +261,8 @@ export default function PracticePage() {
                     onClick={() => setSelectedDifficulty(diff.value)}
                     className={`py-3 px-4 rounded-xl border-2 transition-all ${
                       selectedDifficulty === diff.value
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-semibold'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     {diff.label}
@@ -255,35 +273,37 @@ export default function PracticePage() {
 
             {/* Start Button */}
             <div className="pt-4">
-              <button
+              <Button
                 onClick={startPractice}
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center space-x-3 shadow-lg"
+                disabled={loading || !hasSubjects}
+                className="glass-button glass-button-primary rounded-xl font-semibold shadow-lg"
+                sx={{ width: '100%', py: 2, textTransform: 'none' }}
               >
                 <FiPlay className="w-5 h-5" />
-                <span>Start Practice</span>
+                <span className="ml-2">Start Practice</span>
                 <FiLock className="w-4 h-4 opacity-70" />
-              </button>
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
+              </Button>
+              <p className="text-center text-sm text-slate-500 mt-3">
                 🔒 Device will be locked in fullscreen mode during practice
               </p>
             </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Info Cards */}
           <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow">
-              <div className="text-2xl font-bold text-blue-600">120+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Questions</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow">
-              <div className="text-2xl font-bold text-purple-600">3</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Subjects</div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow">
-              <div className="text-2xl font-bold text-green-600">JEE</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Exam Pattern</div>
-            </div>
+            {[
+              { value: '120+', label: 'Total Questions', color: 'text-blue-600' },
+              { value: '3', label: 'Subjects', color: 'text-purple-600' },
+              { value: 'JEE', label: 'Exam Pattern', color: 'text-green-600' },
+            ].map((item) => (
+              <Card key={item.label} className="glass-card rounded-2xl">
+                <CardContent className="p-4 text-center">
+                  <div className={`text-2xl font-bold ${item.color}`}>{item.value}</div>
+                  <div className="text-sm text-slate-600">{item.label}</div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>

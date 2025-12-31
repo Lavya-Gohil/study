@@ -50,15 +50,15 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+    <div className="app-shell flex items-center justify-center p-6">
+      <div className="glass-card glass-shimmer relative z-10 rounded-3xl p-8 max-w-md w-full">
+        <h1 className="text-3xl font-bold text-center mb-8 text-slate-800">
           Create Your Account
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Full Name
             </label>
             <input
@@ -67,13 +67,13 @@ export default function SignUpPage() {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 rounded-xl glass-input text-slate-800"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Email
             </label>
             <input
@@ -82,13 +82,13 @@ export default function SignUpPage() {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 rounded-xl glass-input text-slate-800"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Password
             </label>
             <input
@@ -97,14 +97,14 @@ export default function SignUpPage() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 rounded-xl glass-input text-slate-800"
               required
               minLength={6}
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+            <div className="p-3 bg-red-50/80 border border-red-200 rounded-xl text-red-600 text-sm">
               {error}
             </div>
           )}
@@ -112,21 +112,21 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+            className="w-full py-3 glass-button glass-button-primary rounded-xl disabled:opacity-50 font-medium"
           >
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-4 text-gray-500 text-sm">or</span>
-          <div className="flex-1 border-t border-gray-300"></div>
+          <div className="flex-1 border-t border-slate-200"></div>
+          <span className="px-4 text-slate-500 text-sm">or</span>
+          <div className="flex-1 border-t border-slate-200"></div>
         </div>
 
         <button
           onClick={() => signIn('google', { callbackUrl: '/onboarding' })}
-          className="w-full py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium flex items-center justify-center gap-2"
+          className="w-full py-3 glass-pill hover:shadow-lg transition-all font-medium flex items-center justify-center gap-2 text-slate-700"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -149,7 +149,7 @@ export default function SignUpPage() {
           Continue with Google
         </button>
 
-        <p className="mt-6 text-center text-gray-600">
+        <p className="mt-6 text-center text-slate-600">
           Already have an account?{' '}
           <Link href="/auth/signin" className="text-blue-600 hover:text-blue-700 font-medium">
             Sign In

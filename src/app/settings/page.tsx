@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiMoon, FiSun, FiBell, FiMail, FiClock, FiSave, FiTrash2 } from 'react-icons/fi'
+import { IconButton } from '@mui/material'
 import toast from 'react-hot-toast'
 
 export default function SettingsPage() {
@@ -17,6 +18,7 @@ export default function SettingsPage() {
   const [breakReminders, setBreakReminders] = useState(true)
   const [emailNotifications, setEmailNotifications] = useState(false)
   const [saving, setSaving] = useState(false)
+  const saveTimer = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // Load dark mode preference from localStorage on mount
@@ -31,16 +33,18 @@ export default function SettingsPage() {
   }, [status, router])
 
   useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+    }
+  }, [])
+
+  useEffect(() => {
     // Apply dark mode to document and save to localStorage
     if (darkMode) {
       document.documentElement.classList.add('dark')
-      document.body.style.backgroundColor = '#111827'
-      document.body.style.color = '#ffffff'
       localStorage.setItem('darkMode', 'true')
     } else {
       document.documentElement.classList.remove('dark')
-      document.body.style.backgroundColor = ''
-      document.body.style.color = ''
       localStorage.setItem('darkMode', 'false')
     }
   }, [darkMode])
@@ -78,9 +82,7 @@ export default function SettingsPage() {
       })
 
       if (res.ok) {
-        toast.success('Settings saved!')
         if (darkMode !== (session?.user as any)?.darkMode) {
-          // Apply dark mode
           document.documentElement.classList.toggle('dark', darkMode)
         }
       } else {
@@ -92,6 +94,13 @@ export default function SettingsPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const queueSave = () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      handleSave()
+    }, 450)
   }
 
   const handleDeleteAccount = async () => {
@@ -118,71 +127,78 @@ export default function SettingsPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="app-shell flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div className="app-shell">
+      <nav className="glass-nav">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <button
+            <IconButton
               onClick={() => router.push('/dashboard')}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
+              className="glass-pill"
+              sx={{ width: 44, height: 44 }}
             >
               <FiArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold text-blue-600">Settings</h1>
+            </IconButton>
+            <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="space-y-6">
           {/* Profile Section */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Profile</h2>
+          <div className="glass-card rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Profile</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => {
+                    setName(e.target.value)
+                    queueSave()
+                  }}
+                  className="w-full px-4 py-2 rounded-xl glass-input text-slate-800"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
                 <input
                   type="email"
                   value={email}
                   disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="w-full px-4 py-2 rounded-xl bg-slate-100/60 text-slate-500 cursor-not-allowed"
                 />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-slate-500 mt-1">Email cannot be changed</p>
               </div>
             </div>
           </div>
 
           {/* Appearance Section */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Appearance</h2>
+          <div className="glass-card rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Appearance</h2>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {darkMode ? <FiMoon className="w-5 h-5 text-gray-600" /> : <FiSun className="w-5 h-5 text-gray-600" />}
+                {darkMode ? <FiMoon className="w-5 h-5 text-slate-600" /> : <FiSun className="w-5 h-5 text-slate-600" />}
                 <div>
-                  <div className="font-medium text-gray-900">Dark Mode</div>
-                  <div className="text-sm text-gray-500">Toggle between light and dark themes</div>
+                  <div className="font-medium text-slate-900">Dark Mode</div>
+                  <div className="text-sm text-slate-500">Toggle between light and dark themes</div>
                 </div>
               </div>
-              <button
-                onClick={() => setDarkMode(!darkMode)}
+                <button
+                onClick={() => {
+                  setDarkMode(!darkMode)
+                  queueSave()
+                }}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  darkMode ? 'bg-blue-600' : 'bg-gray-300'
+                  darkMode ? 'bg-blue-600' : 'bg-slate-300'
                 }`}
               >
                 <span
@@ -195,23 +211,26 @@ export default function SettingsPage() {
           </div>
 
           {/* Notifications Section */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Notifications</h2>
+          <div className="glass-card rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Notifications</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <FiClock className="w-5 h-5 text-gray-600" />
+                  <FiClock className="w-5 h-5 text-slate-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Study Reminders</div>
-                    <div className="text-sm text-gray-500">Get reminded to study daily</div>
+                    <div className="font-medium text-slate-900">Study Reminders</div>
+                    <div className="text-sm text-slate-500">Get reminded to study daily</div>
                   </div>
                 </div>
                 <button
-                  onClick={() => setStudyReminders(!studyReminders)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    studyReminders ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                >
+                onClick={() => {
+                  setStudyReminders(!studyReminders)
+                  queueSave()
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  studyReminders ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       studyReminders ? 'translate-x-6' : 'translate-x-1'
@@ -222,18 +241,21 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <FiBell className="w-5 h-5 text-gray-600" />
+                  <FiBell className="w-5 h-5 text-slate-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Break Reminders</div>
-                    <div className="text-sm text-gray-500">Get reminded to take breaks</div>
+                    <div className="font-medium text-slate-900">Break Reminders</div>
+                    <div className="text-sm text-slate-500">Get reminded to take breaks</div>
                   </div>
                 </div>
                 <button
-                  onClick={() => setBreakReminders(!breakReminders)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    breakReminders ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                >
+                onClick={() => {
+                  setBreakReminders(!breakReminders)
+                  queueSave()
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  breakReminders ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       breakReminders ? 'translate-x-6' : 'translate-x-1'
@@ -244,18 +266,21 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <FiMail className="w-5 h-5 text-gray-600" />
+                  <FiMail className="w-5 h-5 text-slate-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Email Notifications</div>
-                    <div className="text-sm text-gray-500">Receive weekly progress reports</div>
+                    <div className="font-medium text-slate-900">Email Notifications</div>
+                    <div className="text-sm text-slate-500">Receive weekly progress reports</div>
                   </div>
                 </div>
                 <button
-                  onClick={() => setEmailNotifications(!emailNotifications)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailNotifications ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                >
+                onClick={() => {
+                  setEmailNotifications(!emailNotifications)
+                  queueSave()
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  emailNotifications ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       emailNotifications ? 'translate-x-6' : 'translate-x-1'
@@ -268,25 +293,21 @@ export default function SettingsPage() {
 
           {/* Actions */}
           <div className="flex gap-4">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
-            >
-              <FiSave className="w-5 h-5" />
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <FiSave className="w-4 h-4" />
+              {saving ? 'Saving…' : 'Changes saved automatically'}
+            </div>
           </div>
 
           {/* Danger Zone */}
-          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+          <div className="glass-card rounded-2xl p-6 border border-red-200/70 bg-red-50/70">
             <h2 className="text-xl font-bold text-red-900 mb-2">Danger Zone</h2>
             <p className="text-sm text-red-700 mb-4">
               Once you delete your account, there is no going back. Please be certain.
             </p>
             <button
               onClick={handleDeleteAccount}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2 font-medium"
+              className="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 transition flex items-center gap-2 font-medium"
             >
               <FiTrash2 className="w-4 h-4" />
               Delete Account

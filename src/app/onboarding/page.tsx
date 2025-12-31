@@ -67,20 +67,20 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
+    <div className="app-shell flex items-center justify-center p-4">
+      <div className="glass-card glass-shimmer rounded-3xl p-8 max-w-2xl w-full relative z-10">
         <div className="mb-8">
           <div className="flex justify-between mb-4">
             {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
                 className={`h-2 flex-1 mx-1 rounded ${
-                  s <= step ? 'bg-blue-600' : 'bg-gray-200'
+                  s <= step ? 'bg-blue-600' : 'bg-slate-200'
                 }`}
               />
             ))}
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-slate-800">
             {step === 1 && 'What exam are you preparing for?'}
             {step === 2 && 'Which subjects will you study?'}
             {step === 3 && 'How many hours can you study daily?'}
@@ -94,10 +94,10 @@ export default function OnboardingPage() {
               <button
                 key={exam}
                 onClick={() => setFormData({ ...formData, examType: exam })}
-                className={`w-full p-4 rounded-lg border-2 text-left transition ${
+                className={`w-full p-4 rounded-xl border-2 text-left transition ${
                   formData.examType === exam
                     ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
+                    : 'border-slate-200 hover:border-blue-300'
                 }`}
               >
                 {exam}
@@ -112,10 +112,10 @@ export default function OnboardingPage() {
               <button
                 key={subject}
                 onClick={() => toggleSubject(subject)}
-                className={`p-4 rounded-lg border-2 transition ${
+                className={`p-4 rounded-xl border-2 transition ${
                   formData.subjects.includes(subject)
                     ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
+                    : 'border-slate-200 hover:border-blue-300'
                 }`}
               >
                 {subject}
@@ -140,9 +140,9 @@ export default function OnboardingPage() {
               onChange={(e) =>
                 setFormData({ ...formData, dailyHours: parseInt(e.target.value) })
               }
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
-            <p className="text-gray-500 text-center">
+            <p className="text-slate-500 text-center">
               Recommended: 4-6 hours for optimal retention
             </p>
           </div>
@@ -157,10 +157,10 @@ export default function OnboardingPage() {
                 setFormData({ ...formData, examDate: e.target.value })
               }
               min={new Date().toISOString().split('T')[0]}
-              className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none text-lg"
+              className="w-full p-4 rounded-xl glass-input text-lg"
             />
             {formData.examDate && (
-              <p className="text-center text-gray-600">
+              <p className="text-center text-slate-600">
                 {Math.ceil(
                   (new Date(formData.examDate).getTime() - new Date().getTime()) /
                     (1000 * 60 * 60 * 24)
@@ -175,7 +175,7 @@ export default function OnboardingPage() {
           <button
             onClick={() => setStep(step - 1)}
             disabled={step === 1}
-            className="px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 rounded-xl glass-pill hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
               (step === 4 && !formData.examDate) ||
               loading
             }
-            className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 rounded-xl glass-button glass-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {step === 4 ? (loading ? 'Setting up...' : 'Get Started') : 'Next'}
           </button>

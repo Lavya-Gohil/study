@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { Card, CardContent, IconButton, Typography } from '@mui/material'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns'
 
 export default function CalendarPage() {
@@ -64,49 +65,63 @@ export default function CalendarPage() {
     setSelectedPlan(plan)
   }
 
+  if (loading) {
+    return (
+      <div className="app-shell flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div className="app-shell">
+      <nav className="glass-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <button
+            <IconButton
               onClick={() => router.push('/dashboard')}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
+              className="glass-pill"
+              sx={{ width: 44, height: 44 }}
             >
               <FiArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold text-blue-600">Study Calendar</h1>
+            </IconButton>
+            <Typography variant="h5" className="text-slate-900 font-bold">
+              Study Calendar
+            </Typography>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+          <Card className="lg:col-span-2 glass-card rounded-2xl">
+            <CardContent className="p-6">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-6">
-              <button
+              <IconButton
                 onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="glass-pill"
+                sx={{ width: 40, height: 40 }}
               >
                 <FiChevronLeft className="w-6 h-6" />
-              </button>
-              <h2 className="text-2xl font-bold text-gray-900">
+              </IconButton>
+              <Typography variant="h5" className="text-slate-900 font-bold">
                 {format(currentMonth, 'MMMM yyyy')}
-              </h2>
-              <button
+              </Typography>
+              <IconButton
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="glass-pill"
+                sx={{ width: 40, height: 40 }}
               >
                 <FiChevronRight className="w-6 h-6" />
-              </button>
+              </IconButton>
             </div>
 
             {/* Days of Week */}
             <div className="grid grid-cols-7 gap-2 mb-2">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-600 py-2">
+                <div key={day} className="text-center text-sm font-medium text-slate-600 py-2">
                   {day}
                 </div>
               ))}
@@ -128,17 +143,17 @@ export default function CalendarPage() {
                   <button
                     key={day.toString()}
                     onClick={() => handleDateClick(day)}
-                    className={`aspect-square p-2 rounded-lg border-2 transition relative ${
-                      isSelected
-                        ? 'border-blue-600 bg-blue-50'
-                        : isToday
-                        ? 'border-blue-400'
-                        : 'border-gray-200 hover:border-gray-300'
-                    } ${!isSameMonth(day, currentMonth) ? 'opacity-40' : ''}`}
-                  >
-                    <div className="text-sm font-medium text-gray-900">
-                      {format(day, 'd')}
-                    </div>
+                  className={`aspect-square p-2 rounded-lg border-2 transition relative ${
+                    isSelected
+                      ? 'border-blue-600 bg-blue-50'
+                      : isToday
+                      ? 'border-blue-400'
+                      : 'border-slate-200 hover:border-slate-300'
+                  } ${!isSameMonth(day, currentMonth) ? 'opacity-40' : ''}`}
+                >
+                  <div className="text-sm font-medium text-slate-900">
+                    {format(day, 'd')}
+                  </div>
                     {hasData && (
                       <div
                         className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full ${
@@ -152,7 +167,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Legend */}
-            <div className="mt-6 flex items-center gap-6 text-sm text-gray-600">
+            <div className="mt-6 flex items-center gap-6 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-green-500" />
                 <span>4+ hours</span>
@@ -166,39 +181,47 @@ export default function CalendarPage() {
                 <span>&lt;2 hours</span>
               </div>
             </div>
-          </div>
+
+            {plans.length === 0 && !loading && (
+              <div className="mt-6 rounded-2xl border border-dashed border-slate-200 p-6 text-center text-slate-600">
+                No study plans yet. Complete onboarding to generate daily plans.
+              </div>
+            )}
+            </CardContent>
+          </Card>
 
           {/* Selected Day Details */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select a date'}
-            </h3>
+          <Card className="glass-card rounded-2xl">
+            <CardContent className="p-6">
+              <Typography variant="h6" className="text-slate-900 font-bold mb-4">
+                {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select a date'}
+              </Typography>
 
             {selectedPlan ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Hours</span>
+                  <span className="text-sm text-slate-600">Total Hours</span>
                   <span className="text-lg font-bold text-blue-600">
                     {selectedPlan.totalHours}h
                   </span>
                 </div>
 
-                <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Tasks</h4>
+                <div className="border-t border-slate-200 pt-4">
+                  <h4 className="text-sm font-medium text-slate-700 mb-3">Tasks</h4>
                   <div className="space-y-2">
                     {(selectedPlan.tasks as any[]).map((task: any, index: number) => (
                       <div
                         key={index}
                         className={`p-3 rounded-lg ${
-                          task.completed ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+                          task.completed ? 'bg-green-50 border border-green-200' : 'bg-slate-50'
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="font-medium text-gray-900">{task.subject}</div>
-                            <div className="text-sm text-gray-600">{task.topic}</div>
+                            <div className="font-medium text-slate-900">{task.subject}</div>
+                            <div className="text-sm text-slate-600">{task.topic}</div>
                           </div>
-                          <div className="text-sm font-medium text-gray-500">
+                          <div className="text-sm font-medium text-slate-500">
                             {task.duration}h
                           </div>
                         </div>
@@ -211,11 +234,12 @@ export default function CalendarPage() {
                 </div>
               </div>
             ) : selectedDate ? (
-              <p className="text-gray-500 text-center py-8">No study plan for this day</p>
+              <p className="text-slate-500 text-center py-8">No study plan for this day</p>
             ) : (
-              <p className="text-gray-500 text-center py-8">Click a date to view details</p>
+              <p className="text-slate-500 text-center py-8">Click a date to view details</p>
             )}
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>

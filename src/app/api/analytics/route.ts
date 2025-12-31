@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { startOfWeek, subDays, format } from 'date-fns'
+import { parseJsonArray } from '@/lib/json'
 
 export async function GET(req: NextRequest) {
   try {
@@ -113,7 +114,7 @@ export async function GET(req: NextRequest) {
         let completedTasks = 0
 
         plans.forEach((plan: any) => {
-          const tasks = plan.tasks as any[]
+          const tasks = parseJsonArray<any>(plan.tasks)
           totalTasks += tasks.length
           completedTasks += tasks.filter((t) => t.completed).length
         })
@@ -133,7 +134,7 @@ export async function GET(req: NextRequest) {
     
     let totalCompletedTasks = 0
     allPlans.forEach((plan: any) => {
-      const tasks = plan.tasks as any[]
+      const tasks = parseJsonArray<any>(plan.tasks)
       totalCompletedTasks += tasks.filter((t: any) => t.completed).length
     })
 

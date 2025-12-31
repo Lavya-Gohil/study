@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -16,10 +16,11 @@ model User {
   password      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  role          String    @default("USER")
 
   // Onboarding data
   examType      String?   // JEE, SAT, Boards, etc.
-  subjects      String[]  // Array of subjects
+  subjects      String?   // JSON array of subjects
   dailyHours    Int?      // Target study hours per day
   examDate      DateTime?
   onboardingComplete Boolean @default(false)
@@ -97,7 +98,7 @@ model StudyPlan {
   id          String   @id @default(cuid())
   userId      String
   date        DateTime @default(now())
-  tasks       Json     // Array of tasks: { subject, topic, duration, completed, priority }
+  tasks       String   // JSON array of tasks: { subject, topic, duration, completed, priority }
   totalHours  Float
   completed   Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -157,7 +158,7 @@ model WeeklyProgress {
   totalHours    Float    @default(0)
   completedTasks Int     @default(0)
   totalTasks    Int      @default(0)
-  subjects      Json     // { subject: hours }
+  subjects      String   // JSON object { subject: hours }
   createdAt     DateTime @default(now())
   
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -171,7 +172,7 @@ model Note {
   subject     String
   title       String
   content     String
-  tags        String[]
+  tags        String?  // JSON array of tags
   isPinned    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -211,10 +212,10 @@ model Question {
   id            String   @id @default(cuid())
   subject       String   // Physics, Chemistry, Mathematics, Biology
   topic         String   // Chapter/Topic name
-  question      String   @db.Text
-  options       String[] // Array of 4 options
+  question      String
+  options       String   // JSON array of 4 options
   correctAnswer Int      // Index of correct answer (0-3)
-  explanation   String   @db.Text
+  explanation   String
   difficulty    String   // easy, medium, hard
   
   // Metadata

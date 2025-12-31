@@ -153,10 +153,10 @@ export default function AdminPanel() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="app-shell flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-slate-600">Loading...</p>
         </div>
       </div>
     );
@@ -167,17 +167,17 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+    <div className="app-shell py-8 px-4">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="glass-card glass-shimmer rounded-3xl p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-              <p className="text-gray-600 mt-1">Question Bank Management</p>
+              <h1 className="text-3xl font-bold text-slate-900">Admin Panel</h1>
+              <p className="text-slate-600 mt-1">Question Bank Management</p>
             </div>
             <button
               onClick={() => router.push('/dashboard')}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              className="px-4 py-2 text-slate-600 hover:text-slate-900"
             >
               ← Back to Dashboard
             </button>
@@ -186,19 +186,19 @@ export default function AdminPanel() {
           {/* Stats Overview */}
           {stats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 rounded-lg p-4">
+              <div className="glass-card rounded-2xl p-4">
                 <p className="text-sm text-blue-600 font-medium">Total Questions</p>
                 <p className="text-2xl font-bold text-blue-900">{stats.total || 0}</p>
               </div>
-              <div className="bg-green-50 rounded-lg p-4">
+              <div className="glass-card rounded-2xl p-4">
                 <p className="text-sm text-green-600 font-medium">JEE Main</p>
                 <p className="text-2xl font-bold text-green-900">{stats.jeeMain || 0}</p>
               </div>
-              <div className="bg-purple-50 rounded-lg p-4">
+              <div className="glass-card rounded-2xl p-4">
                 <p className="text-sm text-purple-600 font-medium">NEET</p>
                 <p className="text-2xl font-bold text-purple-900">{stats.neet || 0}</p>
               </div>
-              <div className="bg-orange-50 rounded-lg p-4">
+              <div className="glass-card rounded-2xl p-4">
                 <p className="text-sm text-orange-600 font-medium">CBSE</p>
                 <p className="text-2xl font-bold text-orange-900">{stats.cbse || 0}</p>
               </div>
@@ -214,7 +214,7 @@ export default function AdminPanel() {
               <select
                 value={examType}
                 onChange={(e) => setExamType(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-xl glass-select"
               >
                 <option value="JEE_Main">JEE Main</option>
                 <option value="JEE_Advanced">JEE Advanced</option>
@@ -234,7 +234,7 @@ export default function AdminPanel() {
                 onChange={(e) => setYear(parseInt(e.target.value))}
                 min="2020"
                 max="2025"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-xl glass-input"
               />
             </div>
 
@@ -245,7 +245,7 @@ export default function AdminPanel() {
               <select
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-xl glass-select"
               >
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
@@ -263,7 +263,7 @@ export default function AdminPanel() {
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder="e.g., NTA JEE Main 2024"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-xl glass-input"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function AdminPanel() {
               onChange={(e) => setUrls(e.target.value)}
               placeholder="https://example.com/paper1.pdf&#10;https://example.com/paper2.pdf&#10;https://example.com/paper3.pdf"
               rows={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              className="w-full px-4 py-2 rounded-xl glass-input font-mono text-sm"
             />
           </div>
 
@@ -287,7 +287,7 @@ export default function AdminPanel() {
             <button
               onClick={handleDownload}
               disabled={isDownloading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDownloading ? '⏳ Downloading...' : '1. Download PDFs'}
             </button>
@@ -295,7 +295,7 @@ export default function AdminPanel() {
             <button
               onClick={handleParse}
               disabled={isParsing}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isParsing ? '⏳ Parsing...' : '2. Parse Questions'}
             </button>
@@ -303,7 +303,7 @@ export default function AdminPanel() {
             <button
               onClick={handleImport}
               disabled={isImporting}
-              className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isImporting ? '⏳ Importing...' : '3. Import to DB'}
             </button>
@@ -311,7 +311,7 @@ export default function AdminPanel() {
             <button
               onClick={handleFullProcess}
               disabled={isDownloading || isParsing || isImporting}
-              className="px-6 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ⚡ Run All Steps
             </button>
@@ -320,17 +320,17 @@ export default function AdminPanel() {
           {/* Status Messages */}
           <div className="space-y-2">
             {downloadStatus && (
-              <div className={`p-4 rounded-lg ${downloadStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+              <div className={`p-4 rounded-xl ${downloadStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                 <p className="font-medium">Download: {downloadStatus}</p>
               </div>
             )}
             {parseStatus && (
-              <div className={`p-4 rounded-lg ${parseStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+              <div className={`p-4 rounded-xl ${parseStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                 <p className="font-medium">Parse: {parseStatus}</p>
               </div>
             )}
             {importStatus && (
-              <div className={`p-4 rounded-lg ${importStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+              <div className={`p-4 rounded-xl ${importStatus.includes('✓') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                 <p className="font-medium">Import: {importStatus}</p>
               </div>
             )}
@@ -338,9 +338,9 @@ export default function AdminPanel() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">How to Use</h2>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
+        <div className="glass-card rounded-3xl p-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-4">How to Use</h2>
+          <ol className="list-decimal list-inside space-y-2 text-slate-700">
             <li>Configure the exam type, year, subject, and source</li>
             <li>Paste PDF URLs (one per line) from official exam board websites</li>
             <li>Click "1. Download PDFs" to fetch the papers</li>
@@ -349,7 +349,7 @@ export default function AdminPanel() {
             <li>Or click "⚡ Run All Steps" to automate the entire process</li>
           </ol>
           
-          <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
+          <div className="mt-4 p-4 bg-yellow-50 rounded-xl">
             <p className="text-sm text-yellow-800">
               <strong>Note:</strong> Large batches may take several minutes. The system automatically handles duplicates and validates question format.
             </p>

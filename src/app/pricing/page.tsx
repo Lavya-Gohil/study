@@ -83,11 +83,11 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <nav className="bg-white shadow-sm">
+    <div className="app-shell">
+      <nav className="glass-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-blue-600">StudyFocus</h1>
+            <h1 className="text-2xl font-bold text-slate-900">StudyFocus</h1>
             <button
               onClick={() => router.push('/dashboard')}
               className="text-blue-600 hover:text-blue-700"
@@ -98,12 +98,12 @@ export default function PricingPage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">
             Choose Your Plan
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-slate-600">
             Start with a 7-day free trial. Cancel anytime.
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function PricingPage() {
           {PLANS.map((plan) => (
             <div
               key={plan.name}
-              className={`bg-white rounded-2xl shadow-xl p-8 ${
+              className={`glass-card rounded-3xl p-8 ${
                 plan.popular ? 'ring-4 ring-blue-600 relative' : ''
               }`}
             >
@@ -125,15 +125,15 @@ export default function PricingPage() {
               )}
 
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">
                   {plan.name}
                 </h3>
                 <div className="flex items-baseline justify-center">
-                  <span className="text-5xl font-bold text-gray-900">
+                  <span className="text-5xl font-bold text-slate-900">
                     ₹{plan.price}
                   </span>
                   {plan.price > 0 && (
-                    <span className="text-gray-600 ml-2">
+                    <span className="text-slate-600 ml-2">
                       /{plan.name.includes('Yearly') ? 'year' : 'month'}
                     </span>
                   )}
@@ -154,7 +154,7 @@ export default function PricingPage() {
                     >
                       <path d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-slate-700">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -162,12 +162,12 @@ export default function PricingPage() {
               <button
                 onClick={() => handleSubscribe(plan.priceId, plan.name)}
                 disabled={loading === plan.name}
-                className={`w-full py-3 rounded-lg font-medium transition ${
+                className={`w-full py-3 rounded-xl font-medium transition ${
                   plan.price === 0
                     ? 'bg-green-600 text-white hover:bg-green-700'
                     : plan.popular
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-gray-800 text-white hover:bg-gray-900'
+                    : 'bg-slate-800 text-white hover:bg-slate-900'
                 }`}
               >
                 {loading === plan.name
@@ -176,11 +176,16 @@ export default function PricingPage() {
                   ? 'Get Started Free'
                   : 'Start Free Trial'}
               </button>
+              {plan.price > 0 && (
+                <p className="mt-3 text-xs text-slate-500 text-center">
+                  Cancel anytime during trial
+                </p>
+              )}
             </div>
           ))}
         </div>
 
-        <div className="mt-12 text-center text-gray-600">
+        <div className="mt-12 text-center text-slate-600">
           <p className="mb-2">💳 Secure payment powered by Stripe</p>
           <p>Cancel anytime. No questions asked.</p>
         </div>

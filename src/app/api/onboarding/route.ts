@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseJsonArray } from '@/lib/json'
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,8 +22,10 @@ export async function GET(req: NextRequest) {
       },
     })
 
+    const subjects = parseJsonArray<string>(user?.subjects)
+
     return NextResponse.json({
-      subjects: user?.subjects || [],
+      subjects,
       examType: user?.examType,
       dailyHours: user?.dailyHours,
       examDate: user?.examDate,
@@ -42,12 +45,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { examType, subjects, dailyHours, examDate } = await req.json()
+    const safeSubjects = Array.isArray(subjects) ? subjects : []
 
     const user = await prisma.user.update({
       where: { email: session.user.email },
       data: {
         examType,
-        subjects,
+        subjects: JSON.stringify(safeSubjects),
         dailyHours: parseInt(dailyHours),
         examDate: new Date(examDate),
         onboardingComplete: true,

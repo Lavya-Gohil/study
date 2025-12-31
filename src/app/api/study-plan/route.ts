@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseJsonArray } from '@/lib/json'
 
 // Simple task templates for each subject
 const generateSimpleTasks = (subjects: string[], dailyHours: number, maxTasks: number) => {
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
     })
 
     const isFreeUser = !user?.subscriptionStatus || user.subscriptionStatus === 'free'
+    const subjects = parseJsonArray<string>(user?.subjects)
 
     if (!user?.onboardingComplete) {
       return NextResponse.json(
@@ -65,13 +67,14 @@ export async function GET(req: NextRequest) {
     })
 
     if (existingPlan) {
-      return NextResponse.json({ plan: existingPlan })
+      const tasks = parseJsonArray<any>(existingPlan.tasks)
+      return NextResponse.json({ plan: { ...existingPlan, tasks } })
     }
 
     // Generate new plan with simple tasks
     const maxTasks = isFreeUser ? 3 : 10
     const tasks = generateSimpleTasks(
-      user.subjects.slice(0, isFreeUser ? 3 : user.subjects.length),
+      subjects.slice(0, isFreeUser ? 3 : subjects.length),
       user.dailyHours!,
       maxTasks
     )
@@ -80,12 +83,12 @@ export async function GET(req: NextRequest) {
       data: {
         userId: session.user.id,
         date: today,
-        tasks,
+        tasks: JSON.stringify(tasks),
         totalHours: user.dailyHours!,
       },
     })
 
-    return NextResponse.json({ plan })
+    return NextResponse.json({ plan: { ...plan, tasks } })
   } catch (error) {
     console.error('Study plan error:', error)
     return NextResponse.json(
@@ -112,7 +115,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
     }
 
-    const tasks = plan.tasks as any[]
+    const tasks = parseJsonArray<any>(plan.tasks)
     tasks[taskIndex].completed = completed
 
     const allCompleted = tasks.every((t) => t.completed)
@@ -120,7 +123,7 @@ export async function PATCH(req: NextRequest) {
     const updatedPlan = await prisma.studyPlan.update({
       where: { id: planId },
       data: {
-        tasks,
+        tasks: JSON.stringify(tasks),
         completed: allCompleted,
       },
     })
@@ -162,7 +165,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ plan: updatedPlan })
+    return NextResponse.json({ plan: { ...updatedPlan, tasks } })
   } catch (error) {
     console.error('Update plan error:', error)
     return NextResponse.json(

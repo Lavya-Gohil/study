@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiAward, FiTrendingUp, FiStar, FiTarget } from 'react-icons/fi'
+import { IconButton } from '@mui/material'
 
 export default function AchievementsPage() {
   const { data: session, status } = useSession()
@@ -74,49 +75,43 @@ export default function AchievementsPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="app-shell flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div className="app-shell">
+      <nav className="glass-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <button
+            <IconButton
               onClick={() => router.push('/dashboard')}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
+              className="glass-pill"
+              sx={{ width: 44, height: 44 }}
             >
               <FiArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold text-blue-600">Achievements</h1>
+            </IconButton>
+            <h1 className="text-2xl font-bold text-slate-900">Achievements</h1>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
-            <div className="text-sm opacity-90 mb-1">Level</div>
-            <div className="text-3xl font-bold">{stats.level}</div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
-            <div className="text-sm opacity-90 mb-1">Total XP</div>
-            <div className="text-3xl font-bold">{stats.totalXP}</div>
-          </div>
-          <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-6 text-white">
-            <div className="text-sm opacity-90 mb-1">Coins</div>
-            <div className="text-3xl font-bold">{stats.totalCoins}</div>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
-            <div className="text-sm opacity-90 mb-1">Unlocked</div>
-            <div className="text-3xl font-bold">
-              {stats.unlockedCount}/{achievements.length}
+          {[
+            { label: 'Level', value: stats.level, accent: 'from-blue-500 to-blue-600' },
+            { label: 'Total XP', value: stats.totalXP, accent: 'from-purple-500 to-purple-600' },
+            { label: 'Coins', value: stats.totalCoins, accent: 'from-amber-500 to-amber-600' },
+            { label: 'Unlocked', value: `${stats.unlockedCount}/${achievements.length}`, accent: 'from-emerald-500 to-emerald-600' },
+          ].map((stat) => (
+            <div key={stat.label} className={`rounded-2xl p-6 text-white shadow-lg bg-gradient-to-br ${stat.accent}`}>
+              <div className="text-sm opacity-90 mb-1">{stat.label}</div>
+              <div className="text-3xl font-bold">{stat.value}</div>
             </div>
-          </div>
+          ))}
         </div>
 
         {/* Achievements Grid */}
@@ -128,8 +123,8 @@ export default function AchievementsPage() {
             return (
               <div
                 key={achievement.id}
-                className={`bg-white rounded-xl shadow-lg p-6 transition ${
-                  unlocked ? 'border-2 border-green-400' : 'opacity-60'
+                className={`glass-card rounded-2xl p-6 transition ${
+                  unlocked ? 'border-2 border-green-400' : 'opacity-70'
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -142,14 +137,14 @@ export default function AchievementsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-gray-900">{achievement.name}</h3>
+                      <h3 className="font-bold text-slate-900">{achievement.name}</h3>
                       {unlocked && (
                         <div className="bg-green-100 text-green-600 text-xs font-medium px-2 py-1 rounded-full">
                           ✓ Unlocked
                         </div>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-4">{achievement.description}</p>
+                    <p className="text-sm text-slate-600 mb-4">{achievement.description}</p>
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1 text-purple-600">
                         <FiStar className="w-4 h-4" />
@@ -169,7 +164,13 @@ export default function AchievementsPage() {
 
         {achievements.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No achievements available yet. Check back soon!</p>
+            <p className="text-slate-500 mb-4">No achievements available yet.</p>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="glass-button glass-button-primary rounded-full px-6 py-2"
+            >
+              Start a session
+            </button>
           </div>
         )}
       </main>
