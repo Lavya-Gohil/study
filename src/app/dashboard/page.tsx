@@ -154,15 +154,15 @@ export default function DashboardPage() {
   // Fullscreen Focus Mode
   if (isSessionActive) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex flex-col items-center justify-center z-50">
-        <div className="text-center space-y-8 glass-outline backdrop-blur-2xl rounded-[32px] px-10 py-12">
+      <div className="fixed top-0 left-0 w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center z-[9999] overflow-hidden">
+        <div className="text-center space-y-8 glass-outline backdrop-blur-2xl rounded-[32px] px-10 py-12 max-w-2xl mx-auto">
           <div className="text-sm font-light tracking-widest uppercase opacity-60">
             {selectedSubject}
           </div>
           <div className="text-9xl font-light tracking-tight">
             {formatTime(timeRemaining)}
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center justify-center gap-6">
             <button
               onClick={() => setIsPaused(!isPaused)}
               className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition"
@@ -187,8 +187,8 @@ export default function DashboardPage() {
   // Session Setup Modal
   if (selectedSubject && !isSessionActive) {
     return (
-      <div className="fixed inset-0 app-shell z-40 flex items-center justify-center p-8">
-        <div className="max-w-md w-full space-y-12 glass-card glass-shimmer rounded-[32px] p-10 relative z-10">
+      <div className="fixed top-0 left-0 w-full h-screen app-shell z-[9999] flex items-center justify-center p-8 overflow-hidden">
+        <div className="max-w-md w-full space-y-12 glass-card glass-shimmer rounded-[32px] p-10 relative z-10 mx-auto">
           <div className="text-center space-y-2">
             <div className="text-sm font-light tracking-widest uppercase opacity-40">
               Study Session
@@ -272,7 +272,7 @@ export default function DashboardPage() {
               {showMenu ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
             </IconButton>
             <Typography variant="h6" className="text-slate-900 font-light tracking-tight">
-              Study
+              Acadot
             </Typography>
           </div>
           <div className="flex items-center gap-4">
@@ -290,18 +290,18 @@ export default function DashboardPage() {
                 Calendar
               </button>
               <button
-                onClick={() => router.push('/practice')}
-                className="opacity-60 hover:opacity-100 transition hover-underline"
-              >
-                Practice
-              </button>
-              <button
                 onClick={() => router.push('/notes')}
                 className="opacity-60 hover:opacity-100 transition hover-underline"
               >
                 Notes
               </button>
             </div>
+            <button
+              onClick={() => router.push('/pricing')}
+              className="glass-pill px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg transition"
+            >
+              Upgrade
+            </button>
           </div>
         </div>
       </header>
@@ -351,15 +351,6 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={() => {
-                    router.push('/practice')
-                    setShowMenu(false)
-                  }}
-                  className="w-full text-left px-4 py-3 rounded-lg hover:bg-white/60 transition font-light"
-                >
-                  Practice Questions
-                </button>
-                <button
-                  onClick={() => {
                     router.push('/achievements')
                     setShowMenu(false)
                   }}
@@ -375,6 +366,15 @@ export default function DashboardPage() {
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-white/60 transition font-light"
                 >
                   Settings
+                </button>
+                <button
+                  onClick={() => {
+                    router.push('/pricing')
+                    setShowMenu(false)
+                  }}
+                  className="w-full text-left px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg transition font-light"
+                >
+                  Upgrade to Premium
                 </button>
               </div>
 
@@ -409,9 +409,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
           {[
-            { label: 'Start Practice', action: () => router.push('/practice') },
             { label: 'New Note', action: () => router.push('/notes') },
             { label: 'View Analytics', action: () => router.push('/analytics') },
           ].map((item) => (

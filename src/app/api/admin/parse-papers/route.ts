@@ -3,7 +3,8 @@ import { adminAuthMiddleware } from '@/lib/adminAuth';
 import fs from 'fs';
 import path from 'path';
 // @ts-ignore
-import pdf from 'pdf-parse';
+import * as pdfParse from 'pdf-parse';
+const pdf = (pdfParse as any).default || pdfParse;
 
 const DOWNLOAD_DIR = path.join(process.cwd(), 'downloaded_papers');
 const PARSED_DIR = path.join(process.cwd(), 'parsed_questions');

@@ -14,31 +14,33 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [darkMode, setDarkMode] = useState(false)
-  const [didInitTheme, setDidInitTheme] = useState(false)
   const [studyReminders, setStudyReminders] = useState(true)
   const [breakReminders, setBreakReminders] = useState(true)
   const [emailNotifications, setEmailNotifications] = useState(false)
   const [saving, setSaving] = useState(false)
   const saveTimer = useRef<NodeJS.Timeout | null>(null)
-  const themeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const triggerThemeTransition = useCallback(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const doc = document.documentElement
-    doc.classList.add('theme-transition')
-
-    if (themeTimer.current) window.clearTimeout(themeTimer.current)
-    themeTimer.current = window.setTimeout(() => {
-      doc.classList.remove('theme-transition')
-      themeTimer.current = null
-    }, 520)
-  }, [])
+  const handleDarkModeToggle = () => {
+    const newValue = !darkMode
+    setDarkMode(newValue)
+    document.documentElement.classList.toggle('dark', newValue)
+    localStorage.setItem('darkMode', String(newValue))
+    
+    // Save to server
+    setTimeout(() => {
+      fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ darkMode: newValue }),
+      }).catch(err => console.error('Failed to save dark mode:', err))
+    }, 100)
+  }
 
   useEffect(() => {
-    // Load dark mode preference from localStorage on mount
+    // Load dark mode from localStorage immediately
     const savedDarkMode = localStorage.getItem('darkMode') === 'true'
     setDarkMode(savedDarkMode)
+    document.documentElement.classList.toggle('dark', savedDarkMode)
     
     if (status === 'unauthenticated') {
       router.push('/auth/signin')
@@ -50,23 +52,8 @@ export default function SettingsPage() {
   useEffect(() => {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
-      if (themeTimer.current) window.clearTimeout(themeTimer.current)
     }
   }, [])
-
-  useEffect(() => {
-    const doc = document.documentElement
-
-    doc.classList.toggle('dark', darkMode)
-    localStorage.setItem('darkMode', darkMode ? 'true' : 'false')
-
-    if (!didInitTheme) {
-      setDidInitTheme(true)
-      return
-    }
-
-    triggerThemeTransition()
-  }, [darkMode, didInitTheme, triggerThemeTransition])
 
   const fetchUserSettings = async () => {
     try {
@@ -205,17 +192,14 @@ export default function SettingsPage() {
             <h2 className="text-xl font-bold text-slate-900 mb-4">Appearance</h2>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {darkMode ? <FiMoon className="w-5 h-5 text-slate-600" /> : <FiSun className="w-5 h-5 text-slate-600" />}
+                {!darkMode ? <FiMoon className="w-5 h-5 text-slate-600" /> : <FiSun className="w-5 h-5 text-slate-600" />}
                 <div>
                   <div className="font-medium text-slate-900">Dark Mode</div>
                   <div className="text-sm text-slate-500">Toggle between light and dark themes</div>
                 </div>
               </div>
                 <button
-                onClick={() => {
-                  setDarkMode(!darkMode)
-                  queueSave()
-                }}
+                onClick={handleDarkModeToggle}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   darkMode ? 'bg-blue-600' : 'bg-slate-300'
                 }`}
@@ -315,6 +299,34 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <FiSave className="w-4 h-4" />
               {saving ? 'Saving…' : 'Changes saved automatically'}
+            </div>
+          </div>
+
+          {/* Subscription */}
+          <div className="glass-card rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Subscription</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-slate-900">Current Plan</div>
+                  <div className="text-sm text-slate-500">
+                    {session?.user?.subscriptionStatus === 'premium' ? 'Premium' : 'Free'}
+                  </div>
+                </div>
+                {session?.user?.subscriptionStatus !== 'premium' && (
+                  <button
+                    onClick={() => router.push('/pricing')}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition font-medium"
+                  >
+                    Upgrade to Premium
+                  </button>
+                )}
+              </div>
+              <div className="text-sm text-slate-600">
+                {session?.user?.subscriptionStatus === 'premium'
+                  ? 'You have full access to all premium features'
+                  : 'Free plan: 3 subjects, 3 doubts/day. Upgrade for unlimited access.'}
+              </div>
             </div>
           </div>
 

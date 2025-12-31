@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 
 const PLANS = [
   {
@@ -19,7 +20,7 @@ const PLANS = [
   {
     name: 'Premium Monthly',
     price: 499,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY,
+    planId: process.env.NEXT_PUBLIC_RAZORPAY_PLAN_ID_MONTHLY,
     features: [
       '7-day free trial',
       'AI-generated daily study plans',
@@ -34,7 +35,7 @@ const PLANS = [
   {
     name: 'Premium Yearly',
     price: 3999,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_YEARLY,
+    planId: process.env.NEXT_PUBLIC_RAZORPAY_PLAN_ID_YEARLY,
     features: [
       '7-day free trial',
       'All Premium Monthly features',
@@ -49,14 +50,14 @@ export default function PricingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
-  const handleSubscribe = async (priceId: string | undefined, planName: string) => {
+  const handleSubscribe = async (planId: string | undefined, planName: string, amount: number) => {
     if (planName === 'Free') {
       router.push('/onboarding')
       return
     }
 
-    if (!priceId) {
-      alert('Stripe not configured. Set NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY and NEXT_PUBLIC_STRIPE_PRICE_ID_YEARLY in .env.local')
+    if (!planId) {
+      alert('Payment gateway not configured. Set RAZORPAY_KEY_ID and related variables in .env')
       return
     }
 
@@ -65,14 +66,36 @@ export default function PricingPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ planId, planName, amount }),
       })
 
       if (response.ok) {
-        const { url } = await response.json()
-        window.location.href = url
+        const { subscriptionId, key } = await response.json()
+        
+        // Open Razorpay checkout
+        const options = {
+          key: key,
+          subscription_id: subscriptionId,
+          name: 'Acadot',
+          description: planName,
+          handler: function (response: any) {
+            // Payment successful
+            alert('Payment successful! Subscription ID: ' + response.razorpay_subscription_id)
+            router.push('/dashboard')
+          },
+          prefill: {
+            name: '',
+            email: '',
+          },
+          theme: {
+            color: '#3B82F6',
+          },
+        }
+
+        const razorpay = new (window as any).Razorpay(options)
+        razorpay.open()
       } else {
-        alert('Checkout failed. Stripe may not be configured.')
+        alert('Checkout failed. Payment gateway may not be configured.')
       }
     } catch (error) {
       console.error('Checkout error:', error)
@@ -83,11 +106,13 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="app-shell">
+    <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      <div className="app-shell">
       <nav className="glass-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-900">StudyFocus</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Acadot</h1>
             <button
               onClick={() => router.push('/dashboard')}
               className="text-blue-600 hover:text-blue-700"
@@ -160,7 +185,7 @@ export default function PricingPage() {
               </ul>
 
               <button
-                onClick={() => handleSubscribe(plan.priceId, plan.name)}
+                onClick={() => handleSubscribe(plan.planId, plan.name, plan.price)}
                 disabled={loading === plan.name}
                 className={`w-full py-3 rounded-xl font-medium transition ${
                   plan.price === 0
@@ -186,10 +211,11 @@ export default function PricingPage() {
         </div>
 
         <div className="mt-12 text-center text-slate-600">
-          <p className="mb-2">💳 Secure payment powered by Stripe</p>
+          <p className="mb-2">💳 Secure payment with UPI, Cards & Net Banking</p>
           <p>Cancel anytime. No questions asked.</p>
         </div>
       </main>
     </div>
+    </>
   )
 }

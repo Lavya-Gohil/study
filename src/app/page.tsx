@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { FiArrowRight, FiLock, FiClock, FiTrendingUp, FiZap, FiCheck } from 'react-icons/fi'
+import Image from 'next/image'
 
 export default function Home() {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
@@ -16,11 +17,15 @@ export default function Home() {
       <header className="fixed top-0 w-full glass-panel glass-shimmer border-b border-white/30 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <span className="text-white text-xl font-bold">S</span>
-            </div>
+            <Image 
+              src="/logo.png" 
+              alt="Acadot Logo" 
+              width={40} 
+              height={40}
+              className="w-10 h-10"
+            />
             <h1 className="text-xl font-semibold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              StudyLock
+              Acadot
             </h1>
           </div>
           <div className="flex items-center gap-4">
@@ -245,7 +250,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-white/40 pt-8 text-center text-sm text-slate-600">
-            © 2024 StudyLock. All rights reserved.
+            © 2024 Acadot. All rights reserved.
           </div>
         </div>
       </footer>
