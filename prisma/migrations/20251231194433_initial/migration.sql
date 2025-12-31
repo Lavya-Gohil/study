@@ -1,36 +1,35 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT,
     "email" TEXT NOT NULL,
-    "emailVerified" TIMESTAMP(3),
+    "emailVerified" DATETIME,
     "image" TEXT,
     "password" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'USER',
     "examType" TEXT,
-    "subjects" TEXT[],
+    "subjects" TEXT,
     "dailyHours" INTEGER,
-    "examDate" TIMESTAMP(3),
+    "examDate" DATETIME,
     "onboardingComplete" BOOLEAN NOT NULL DEFAULT false,
     "subscriptionStatus" TEXT NOT NULL DEFAULT 'free',
     "subscriptionId" TEXT,
-    "subscriptionEnd" TIMESTAMP(3),
-    "trialStarted" TIMESTAMP(3),
+    "subscriptionEnd" DATETIME,
+    "trialStarted" DATETIME,
     "darkMode" BOOLEAN NOT NULL DEFAULT false,
     "studyReminders" BOOLEAN NOT NULL DEFAULT true,
     "breakReminders" BOOLEAN NOT NULL DEFAULT true,
     "emailNotifications" BOOLEAN NOT NULL DEFAULT true,
     "xp" INTEGER NOT NULL DEFAULT 0,
     "level" INTEGER NOT NULL DEFAULT 1,
-    "coins" INTEGER NOT NULL DEFAULT 0,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    "coins" INTEGER NOT NULL DEFAULT 0
 );
 
 -- CreateTable
 CREATE TABLE "Account" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
@@ -42,140 +41,131 @@ CREATE TABLE "Account" (
     "scope" TEXT,
     "id_token" TEXT,
     "session_state" TEXT,
-
-    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Session" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "sessionToken" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+    "expires" DATETIME NOT NULL,
+    CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "VerificationToken" (
     "identifier" TEXT NOT NULL,
     "token" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL
+    "expires" DATETIME NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "StudyPlan" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "tasks" JSONB NOT NULL,
-    "totalHours" DOUBLE PRECISION NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "tasks" TEXT NOT NULL,
+    "totalHours" REAL NOT NULL,
     "completed" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "StudyPlan_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "StudyPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Streak" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "currentStreak" INTEGER NOT NULL DEFAULT 0,
     "longestStreak" INTEGER NOT NULL DEFAULT 0,
-    "lastStudyDate" TIMESTAMP(3),
+    "lastStudyDate" DATETIME,
     "totalDays" INTEGER NOT NULL DEFAULT 0,
-
-    CONSTRAINT "Streak_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Streak_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "FocusSession" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "duration" INTEGER NOT NULL,
     "type" TEXT NOT NULL,
     "completed" BOOLEAN NOT NULL DEFAULT false,
-    "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "endTime" TIMESTAMP(3),
-
-    CONSTRAINT "FocusSession_pkey" PRIMARY KEY ("id")
+    "startTime" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endTime" DATETIME,
+    CONSTRAINT "FocusSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Doubt" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "question" TEXT NOT NULL,
     "answer" TEXT,
     "subject" TEXT NOT NULL,
     "resolved" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "Doubt_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Doubt_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "WeeklyProgress" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
-    "weekStart" TIMESTAMP(3) NOT NULL,
-    "weekEnd" TIMESTAMP(3) NOT NULL,
-    "totalHours" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "weekStart" DATETIME NOT NULL,
+    "weekEnd" DATETIME NOT NULL,
+    "totalHours" REAL NOT NULL DEFAULT 0,
     "completedTasks" INTEGER NOT NULL DEFAULT 0,
     "totalTasks" INTEGER NOT NULL DEFAULT 0,
-    "subjects" JSONB NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "WeeklyProgress_pkey" PRIMARY KEY ("id")
+    "subjects" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "WeeklyProgress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Note" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
-    "tags" TEXT[],
+    "tags" TEXT,
+    "whiteboardData" TEXT,
     "isPinned" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Achievement" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "icon" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "requirement" INTEGER NOT NULL,
     "xpReward" INTEGER NOT NULL,
-    "coinReward" INTEGER NOT NULL,
-
-    CONSTRAINT "Achievement_pkey" PRIMARY KEY ("id")
+    "coinReward" INTEGER NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "UserAchievement" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "achievementId" TEXT NOT NULL,
-    "unlockedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "UserAchievement_pkey" PRIMARY KEY ("id")
+    "unlockedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "UserAchievement_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "UserAchievement_achievementId_fkey" FOREIGN KEY ("achievementId") REFERENCES "Achievement" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Question" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "subject" TEXT NOT NULL,
     "topic" TEXT NOT NULL,
     "question" TEXT NOT NULL,
-    "options" TEXT[],
+    "options" TEXT NOT NULL,
     "correctAnswer" INTEGER NOT NULL,
     "explanation" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
@@ -184,12 +174,10 @@ CREATE TABLE "Question" (
     "source" TEXT,
     "paperCode" TEXT,
     "marks" INTEGER NOT NULL DEFAULT 1,
-    "negativeMarks" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "negativeMarks" REAL NOT NULL DEFAULT 0,
     "timeEstimate" INTEGER NOT NULL DEFAULT 60,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
 );
 
 -- CreateIndex
@@ -251,33 +239,3 @@ CREATE INDEX "Question_difficulty_year_idx" ON "Question"("difficulty", "year");
 
 -- CreateIndex
 CREATE INDEX "Question_examType_year_idx" ON "Question"("examType", "year");
-
--- AddForeignKey
-ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StudyPlan" ADD CONSTRAINT "StudyPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Streak" ADD CONSTRAINT "Streak_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FocusSession" ADD CONSTRAINT "FocusSession_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Doubt" ADD CONSTRAINT "Doubt_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "WeeklyProgress" ADD CONSTRAINT "WeeklyProgress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserAchievement" ADD CONSTRAINT "UserAchievement_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserAchievement" ADD CONSTRAINT "UserAchievement_achievementId_fkey" FOREIGN KEY ("achievementId") REFERENCES "Achievement"("id") ON DELETE CASCADE ON UPDATE CASCADE;

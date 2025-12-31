@@ -167,17 +167,18 @@ model WeeklyProgress {
 }
 
 model Note {
-  id          String   @id @default(cuid())
-  userId      String
-  subject     String
-  title       String
-  content     String
-  tags        String?  // JSON array of tags
-  isPinned    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  userId         String
+  subject        String
+  title          String
+  content        String
+  tags           String?  // JSON array of tags
+  whiteboardData String?  // JSON whiteboard snapshot
+  isPinned       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, subject])
 }

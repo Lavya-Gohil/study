@@ -3,9 +3,17 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { FiArrowLeft, FiPlus, FiSearch, FiStar, FiTrash2, FiEdit2 } from 'react-icons/fi'
+import { FiArrowLeft, FiPlus, FiSearch, FiStar, FiTrash2, FiEdit2, FiEdit, FiPenTool } from 'react-icons/fi'
 import toast, { Toaster } from 'react-hot-toast'
-import { Button, Card, CardContent, IconButton, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { Button, Card, CardContent, IconButton, MenuItem, Select, TextField, Typography, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import dynamic from 'next/dynamic'
+import 'tldraw/tldraw.css'
+
+// Dynamically import Tldraw to avoid SSR issues
+const Tldraw = dynamic(
+  () => import('tldraw').then((mod) => mod.Tldraw),
+  { ssr: false }
+)
 
 export default function NotesPage() {
   const { data: session, status } = useSession()
@@ -16,12 +24,14 @@ export default function NotesPage() {
   const [editingNote, setEditingNote] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSubject, setSelectedSubject] = useState('All')
+  const [noteMode, setNoteMode] = useState<'text' | 'whiteboard'>('text')
   
   const [formData, setFormData] = useState({
     subject: '',
     title: '',
     content: '',
     tags: '',
+    whiteboardData: '',
   })
 
   useEffect(() => {
@@ -67,7 +77,8 @@ export default function NotesPage() {
         toast.success(editingNote ? 'Note updated!' : 'Note created!')
         setShowModal(false)
         setEditingNote(null)
-        setFormData({ subject: '', title: '', content: '', tags: '' })
+        setFormData({ subject: '', title: '', content: '', tags: '', whiteboardData: '' })
+        setNoteMode('text')
         fetchNotes()
       }
     } catch (error) {
@@ -232,6 +243,7 @@ export default function NotesPage() {
                         title: note.title,
                         content: note.content,
                         tags: note.tags.join(', '),
+                        whiteboardData: note.whiteboardData || '',
                       })
                       setShowModal(true)
                     }}
@@ -276,44 +288,92 @@ export default function NotesPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center p-4 z-50">
-          <div className="glass-card glass-shimmer rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="glass-card glass-shimmer rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-slate-900 mb-6">
               {editingNote ? 'Edit Note' : 'Create New Note'}
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  required
-                  className="w-full p-3 rounded-xl glass-input"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl glass-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                    className="w-full p-3 rounded-xl glass-input"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                  className="w-full p-3 rounded-xl glass-input"
-                />
+              {/* Mode Toggle */}
+              <div className="flex justify-center">
+                <ToggleButtonGroup
+                  value={noteMode}
+                  exclusive
+                  onChange={(_, newMode) => newMode && setNoteMode(newMode)}
+                  className="glass-pill"
+                >
+                  <ToggleButton value="text" className="px-6 py-2">
+                    <FiEdit className="w-4 h-4 mr-2" />
+                    Text Note
+                  </ToggleButton>
+                  <ToggleButton value="whiteboard" className="px-6 py-2">
+                    <FiPenTool className="w-4 h-4 mr-2" />
+                    Whiteboard
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Content</label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  required
-                  rows={10}
-                  className="w-full p-3 rounded-xl glass-input"
-                />
-              </div>
+              {noteMode === 'text' ? (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Content</label>
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    required={noteMode === 'text'}
+                    rows={12}
+                    className="w-full p-3 rounded-xl glass-input"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Whiteboard</label>
+                  <div className="w-full h-[500px] rounded-xl overflow-hidden border-2 border-slate-200">
+                    <Tldraw
+                      onMount={(editor) => {
+                        // Load existing whiteboard data if available
+                        if (formData.whiteboardData) {
+                          try {
+                            const data = JSON.parse(formData.whiteboardData)
+                            editor.loadSnapshot(data)
+                          } catch (error) {
+                            console.error('Error loading whiteboard data:', error)
+                          }
+                        }
+                        
+                        // Save whiteboard data on changes
+                        editor.store.listen(() => {
+                          const snapshot = editor.getSnapshot()
+                          setFormData((prev) => ({ ...prev, whiteboardData: JSON.stringify(snapshot) }))
+                        }, { source: 'user', scope: 'document' })
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Tags (comma-separated)</label>
@@ -332,7 +392,8 @@ export default function NotesPage() {
                   onClick={() => {
                     setShowModal(false)
                     setEditingNote(null)
-                    setFormData({ subject: '', title: '', content: '', tags: '' })
+                    setFormData({ subject: '', title: '', content: '', tags: '', whiteboardData: '' })
+                    setNoteMode('text')
                   }}
                   className="flex-1 px-4 py-3 glass-pill hover:shadow-md transition"
                 >

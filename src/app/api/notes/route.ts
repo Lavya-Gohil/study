@@ -38,15 +38,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { subject, title, content, tags } = await req.json()
+    const { subject, title, content, tags, whiteboardData } = await req.json()
 
     const note = await prisma.note.create({
       data: {
         userId: session.user.id,
         subject,
         title,
-        content,
+        content: content || '',
         tags: JSON.stringify(tags || []),
+        whiteboardData: whiteboardData || null,
       },
     })
 
