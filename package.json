@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "export": "prisma generate && next build",
     "build:win": "electron-builder --win nsis --x64",
     "start": "next start",
     "electron": "electron .",

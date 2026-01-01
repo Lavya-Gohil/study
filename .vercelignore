@@ -9,3 +9,7 @@ build
 electron
 exam_papers
 scripts
+webapp-exe
+.venv
+*.exe
+*.dll
