@@ -10,32 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-    })
-
-    const isFreeUser = !user?.subscriptionStatus || user.subscriptionStatus === 'free'
-
-    // Check daily limit for free users (3 doubts per day)
-    if (isFreeUser) {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      
-      const doubtsToday = await prisma.doubt.count({
-        where: {
-          userId: session.user.id,
-          createdAt: { gte: today }
-        }
-      })
-
-      if (doubtsToday >= 3) {
-        return NextResponse.json(
-          { error: 'Free plan limited to 3 doubts per day. Upgrade to Premium for unlimited doubts!' },
-          { status: 403 }
-        )
-      }
-    }
-
+    // All users have unlimited doubts access
     const { question, subject } = await req.json()
 
     // Generate a simple educational response

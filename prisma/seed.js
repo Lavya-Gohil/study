@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client")
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 
 const prisma = new PrismaClient()
 
@@ -23,7 +23,7 @@ const users = [
     email: "user@local.test",
     password: "User123!",
     role: "USER",
-    subscriptionStatus: "free",
+    subscriptionStatus: "premium",
   },
 ]
 

@@ -3,8 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 
-const pageTransition = { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
-const spotlightTransition = { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+const pageTransition = { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }
+const spotlightTransition = { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
 
 export default function PageTransition({
   children,

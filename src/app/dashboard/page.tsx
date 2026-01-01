@@ -296,12 +296,6 @@ export default function DashboardPage() {
                 Notes
               </button>
             </div>
-            <button
-              onClick={() => router.push('/pricing')}
-              className="glass-pill px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg transition"
-            >
-              Upgrade
-            </button>
           </div>
         </div>
       </header>
@@ -366,15 +360,6 @@ export default function DashboardPage() {
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-white/60 transition font-light"
                 >
                   Settings
-                </button>
-                <button
-                  onClick={() => {
-                    router.push('/pricing')
-                    setShowMenu(false)
-                  }}
-                  className="w-full text-left px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg transition font-light"
-                >
-                  Upgrade to Premium
                 </button>
               </div>
 

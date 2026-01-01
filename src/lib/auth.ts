@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 declare module "next-auth" {
   interface Session {
@@ -75,11 +75,8 @@ export const authOptions: NextAuthOptions = {
         })
         
         if (dbUser) {
-          const isPrivileged =
-            dbUser.role === "SUPER_ADMIN" || dbUser.role === "MODERATOR"
-          token.subscriptionStatus = isPrivileged
-            ? "premium"
-            : dbUser.subscriptionStatus
+          // All users get premium access
+          token.subscriptionStatus = "premium"
           token.onboardingComplete = dbUser.onboardingComplete
         }
       }

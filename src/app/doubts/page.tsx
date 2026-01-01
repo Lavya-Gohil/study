@@ -41,10 +41,7 @@ export default function DoubtsPage() {
   }
 
   const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'History', 'Computer Science']
-  const isFreeUser = session?.user?.subscriptionStatus === 'free'
-  const maxFreeDoubts = 3
-  const limitReached = isFreeUser && doubtsToday >= maxFreeDoubts
-  const progress = Math.min(100, (doubtsToday / maxFreeDoubts) * 100)
+  // All users have unlimited access
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,12 +54,6 @@ export default function DoubtsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, subject }),
       })
-
-      if (response.status === 403) {
-        const data = await response.json()
-        alert(data.error)
-        return
-      }
 
       if (response.ok) {
         const data = await response.json()
@@ -94,37 +85,6 @@ export default function DoubtsPage() {
       </nav>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {isFreeUser && (
-          <div className="mb-6 glass-card rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-800 font-medium">
-                  📝 Free Plan: {doubtsToday}/{maxFreeDoubts} doubts used today
-                </p>
-                <div className="mt-2 h-2 w-full rounded-full bg-blue-100">
-                  <div
-                    className="h-2 rounded-full bg-blue-600 transition-all"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                {limitReached && (
-                  <p className="text-sm text-blue-600 mt-1">
-                    Upgrade to Premium for unlimited doubts!
-                  </p>
-                )}
-              </div>
-              {limitReached && (
-                <button
-                  onClick={() => router.push('/pricing')}
-                  className="px-4 py-2 glass-button glass-button-primary rounded-xl transition"
-                >
-                  Upgrade Now
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-        
         <div className="glass-card glass-shimmer rounded-3xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -160,10 +120,10 @@ export default function DoubtsPage() {
 
             <button
               type="submit"
-              disabled={loading || !question || limitReached}
+              disabled={loading || !question}
               className="w-full py-3 glass-button glass-button-primary rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              {limitReached ? 'Upgrade to Continue' : loading ? 'Solving...' : 'Get Answer'}
+              {loading ? 'Solving...' : 'Get Answer'}
             </button>
           </form>
 

@@ -247,7 +247,7 @@ h4,
     box-shadow: var(--glass-shadow);
     backdrop-filter: blur(18px) saturate(140%);
     color: var(--page-ink);
-    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 240ms ease, border-color 240ms ease, background-color 240ms ease;
+    transition: box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, background-color 240ms ease;
   }
 
   .liquid-glass::before,
@@ -276,7 +276,6 @@ h4,
   }
 
   .liquid-glass:hover {
-    transform: translateY(-2px);
     box-shadow: 0 24px 70px color-mix(in srgb, var(--accent-violet) 26%, rgba(15, 23, 42, 0.22));
     border-color: color-mix(in srgb, var(--accent-sky) 28%, var(--page-stroke));
   }
@@ -287,17 +286,14 @@ h4,
   }
 
   .liquid-hoverable {
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, filter 200ms ease;
-    will-change: transform, box-shadow;
+    transition: box-shadow 220ms ease, filter 200ms ease;
   }
 
   .liquid-hoverable:hover {
-    transform: translateY(-2px) scale(1.005);
     filter: saturate(1.05);
   }
 
   .liquid-hoverable:active {
-    transform: translateY(0px) scale(0.995);
     transition-duration: 80ms;
   }
 
@@ -322,17 +318,13 @@ h4,
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
     backdrop-filter: blur(16px) saturate(140%);
-    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, background-color 240ms ease, color 240ms ease;
+    transition: box-shadow 240ms ease, border-color 240ms ease, background-color 240ms ease, color 240ms ease;
     border-radius: 28px;
     position: relative;
-    transform-style: preserve-3d;
-    transform: translateY(var(--lift, 0px)) perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-    will-change: transform, background-color, box-shadow;
     color: var(--page-ink);
   }
 
   .glass-card:hover {
-    --lift: -2px;
     box-shadow: 0 26px 70px color-mix(in srgb, var(--accent-violet) 24%, rgba(15, 23, 42, 0.18));
     border-color: color-mix(in srgb, var(--accent-sky) 32%, var(--glass-border));
   }
@@ -363,8 +355,7 @@ h4,
     background: var(--page-surface);
     border: 1px solid var(--page-stroke);
     color: var(--page-ink);
-    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
-    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease, background-color 200ms ease, color 200ms ease;
+    transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease, color 200ms ease;
     border-radius: 18px;
   }
 
@@ -383,12 +374,11 @@ h4,
 
   .glass-button {
     border-radius: 999px;
-    transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease, background-color 200ms ease, color 200ms ease;
+    transition: box-shadow 200ms ease, filter 200ms ease, background-color 200ms ease, color 200ms ease;
     color: var(--page-ink);
   }
 
   .glass-button:hover {
-    transform: translateY(-2px) scale(1.01);
     filter: saturate(1.1);
   }
 
@@ -406,12 +396,11 @@ h4,
     background: var(--page-surface);
     border: 1px solid var(--page-stroke);
     border-radius: 999px;
-    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, background-color 200ms ease, color 200ms ease;
+    transition: box-shadow 200ms ease, border-color 200ms ease, background-color 200ms ease, color 200ms ease;
     color: var(--page-ink);
   }
 
   .glass-pill:hover {
-    transform: translateY(-1px);
     box-shadow: 0 12px 28px color-mix(in srgb, var(--accent-violet) 20%, rgba(15, 23, 42, 0.16));
     border-color: color-mix(in srgb, var(--accent-sky) 28%, var(--page-stroke));
   }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Mono, Playfair_Display, Sora } from "next/font/google";
 import SessionProvider from "@/components/SessionProvider";
 import PageTransition from "@/components/PageTransition";
-import CursorSpotlight from "@/components/CursorSpotlight";
 import TileMotion from "@/components/TileMotion";
 import "./globals.css";
 
@@ -56,7 +55,6 @@ export default function RootLayout({
         className={`${sora.variable} ${playfair.variable} ${dmMono.variable} antialiased`}
       >
         <SessionProvider>
-          <CursorSpotlight />
           <TileMotion />
           <PageTransition>{children}</PageTransition>
         </SessionProvider>

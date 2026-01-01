@@ -45,15 +45,15 @@ export default function OnboardingPage() {
   }
 
   const toggleSubject = (subject: string) => {
-    const isFreeUser = !session?.user?.subscriptionStatus || session?.user?.subscriptionStatus === 'free'
-    const maxSubjects = isFreeUser ? 3 : 10
+    // All users have unlimited subjects access
+    const maxSubjects = 10
     
     setFormData(prev => {
       const isRemoving = prev.subjects.includes(subject)
       const canAdd = prev.subjects.length < maxSubjects
       
       if (!isRemoving && !canAdd) {
-        alert(`Free plan limited to ${maxSubjects} subjects. Upgrade to Premium for unlimited subjects!`)
+        alert(`Maximum ${maxSubjects} subjects allowed.`)
         return prev
       }
       

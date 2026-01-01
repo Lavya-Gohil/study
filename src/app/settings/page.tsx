@@ -310,22 +310,12 @@ export default function SettingsPage() {
                 <div>
                   <div className="font-medium text-slate-900">Current Plan</div>
                   <div className="text-sm text-slate-500">
-                    {session?.user?.subscriptionStatus === 'premium' ? 'Premium' : 'Free'}
+                    Premium - All Features Unlocked
                   </div>
                 </div>
-                {session?.user?.subscriptionStatus !== 'premium' && (
-                  <button
-                    onClick={() => router.push('/pricing')}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition font-medium"
-                  >
-                    Upgrade to Premium
-                  </button>
-                )}
               </div>
               <div className="text-sm text-slate-600">
-                {session?.user?.subscriptionStatus === 'premium'
-                  ? 'You have full access to all premium features'
-                  : 'Free plan: 3 subjects, 3 doubts/day. Upgrade for unlimited access.'}
+                You have full access to all features including unlimited subjects and doubts.
               </div>
             </div>
           </div>

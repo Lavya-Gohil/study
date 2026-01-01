@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -25,8 +26,8 @@ model User {
   examDate      DateTime?
   onboardingComplete Boolean @default(false)
 
-  // Subscription
-  subscriptionStatus String @default("free") // free, trial, premium
+  // Subscription - All users get premium access
+  subscriptionStatus String @default("premium") // free, trial, premium
   subscriptionId     String?
   subscriptionEnd    DateTime?
   trialStarted       DateTime?

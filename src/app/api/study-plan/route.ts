@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       where: { id: session.user.id },
     })
 
-    const isFreeUser = !user?.subscriptionStatus || user.subscriptionStatus === 'free'
+    // All users have unlimited subjects access
     const subjects = parseJsonArray<string>(user?.subjects)
 
     if (!user?.onboardingComplete) {
@@ -72,9 +72,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate new plan with simple tasks
-    const maxTasks = isFreeUser ? 3 : 10
+    const maxTasks = 10
     const tasks = generateSimpleTasks(
-      subjects.slice(0, isFreeUser ? 3 : subjects.length),
+      subjects,
       user.dailyHours!,
       maxTasks
     )
