@@ -1,9 +1,3 @@
-// Disabled - Using GitHub Pages instead
-/*
 {
-  "name": "acadot",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs"
+  "buildCommand": "prisma generate && next build"
 }
-*/
